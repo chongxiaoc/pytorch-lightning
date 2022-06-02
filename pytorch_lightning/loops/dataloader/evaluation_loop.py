@@ -127,8 +127,10 @@ class EvaluationLoop(DataLoaderLoop):
         if len(outputs) > 0 and self.num_dataloaders == 1:
             outputs = outputs[0]
 
+        print("in eval loop _on_run_end####0:", self.trainer.logger_connector.metrics)
         # lightning module method
         self._evaluation_epoch_end(outputs)
+        print("in eval loop _on_run_end####1:", self.trainer.logger_connector.metrics)
 
         # hook
         self._on_evaluation_epoch_end()
@@ -218,7 +220,7 @@ class EvaluationLoop(DataLoaderLoop):
         """Runs ``{validation/test}_epoch_end``"""
         # inform logger the batch loop has finished
         self.trainer.logger_connector.epoch_end_reached()
-
+        print("in eval loop _evaluation_epoch_end######0:", self.trainer.logger_connector.metrics)
         # call the model epoch end
         model = self.trainer.lightning_module
 
@@ -234,10 +236,15 @@ class EvaluationLoop(DataLoaderLoop):
             if is_overridden("validation_epoch_end", model):
                 model._current_fx_name = "validation_epoch_end"
                 model.validation_epoch_end(outputs)
+        print("in eval loop _evaluation_epoch_end######1:", self.trainer.logger_connector.metrics)
+    
 
     def _on_evaluation_epoch_end(self) -> None:
         """Runs ``on_{validation/test}_epoch_end`` hook."""
         hook_name = "on_test_epoch_end" if self.trainer.testing else "on_validation_epoch_end"
+        print("in eval loop _on_evaluation_epoch_end####0:", self.trainer.logger_connector.metrics)
         self.trainer.call_hook(hook_name)
+        print("in eval loop _on_evaluation_epoch_end####1:", self.trainer.logger_connector.metrics)
         self.trainer.call_hook("on_epoch_end")
+        print("in eval loop _on_evaluation_epoch_end####2:", self.trainer.logger_connector.metrics)
         self.trainer.logger_connector.on_epoch_end()

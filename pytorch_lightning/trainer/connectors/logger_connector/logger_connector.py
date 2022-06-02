@@ -100,6 +100,7 @@ class LoggerConnector:
             step: Step for which metrics should be logged. Default value is `self.global_step` during training or
                 the total validation / test log step count during validation and testing.
         """
+        print("log connector log metrics:", metrics)
         if self.trainer.logger is None or not metrics:
             return
 
@@ -149,6 +150,7 @@ class LoggerConnector:
 
         # logs user requested information to logger
         assert not self._epoch_end_reached
+        print("in log connector eval:", self.metrics["log"])
         self.log_metrics(self.metrics["log"], step=self._eval_log_step)
 
         # increment the step even if nothing was logged
@@ -176,6 +178,7 @@ class LoggerConnector:
     def update_eval_epoch_metrics(self) -> List[_OUT_DICT]:
         assert self._epoch_end_reached
         metrics = self.metrics
+        print("in update eval epoch metrics:", metrics["log"])
 
         if not self.trainer.sanity_checking:
             # log all the metrics as a single dict
@@ -276,6 +279,7 @@ class LoggerConnector:
     def on_epoch_end(self) -> None:
         assert self._epoch_end_reached
         metrics = self.metrics
+        print("log connector on epoch end:", metrics["callback"], metrics["log"])
         self._progress_bar_metrics.update(metrics["pbar"])
         self._callback_metrics.update(metrics["callback"])
         self._logged_metrics.update(metrics["log"])

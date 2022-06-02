@@ -382,6 +382,7 @@ class LightningModule(
             rank_zero_only: Whether the value will be logged only on rank 0. This will prevent synchronization which
                 would produce a deadlock as not all processes would perform this log call.
         """
+        print(f"LOG: {name}: {value}, sync_dist: {sync_dist}")
         if tbptt_reduce_fx is not None:
             rank_zero_deprecation(
                 "`self.log(tbptt_reduce_fx=...)` is no longer supported. The flag will be removed in v1.6."

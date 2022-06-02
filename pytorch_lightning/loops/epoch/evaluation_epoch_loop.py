@@ -129,6 +129,7 @@ class EvaluationEpochLoop(Loop):
 
         self.batch_progress.increment_completed()
 
+        print("in eval loop", self.trainer.logger_connector.metrics["log"])
         # log batch metrics
         self.trainer.logger_connector.update_eval_step_metrics()
 

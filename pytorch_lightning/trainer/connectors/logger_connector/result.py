@@ -221,6 +221,7 @@ class ResultMetric(Metric, DeviceDtypeModuleMixin):
                 self.add_state("cumulated_batch_size", torch.tensor(0), dist_reduce_fx=torch.sum)
 
     def update(self, value: _IN_METRIC, batch_size: int) -> None:
+        print("results update:", value)
         if self.is_tensor:
             if not torch.is_floating_point(value):
                 dtype = torch.get_default_dtype()
@@ -251,6 +252,7 @@ class ResultMetric(Metric, DeviceDtypeModuleMixin):
         else:
             self.value = value
             self._forward_cache = value._forward_cache
+        print("results update done:", self.value)
 
     def compute(self) -> torch.Tensor:
         if self.is_tensor:
@@ -451,6 +453,7 @@ class ResultCollection(dict):
     ) -> None:
         """See :meth:`~pytorch_lightning.core.lightning.LightningModule.log`"""
         # no metrics should be logged with graphs
+        print("in results:", name, value)
         if not enable_graph:
             value = recursive_detach(value)
 
@@ -513,7 +516,8 @@ class ResultCollection(dict):
             # performance: avoid calling `__call__` to avoid the checks in `torch.nn.Module._call_impl`
             result_metric.forward(v.to(self.device), batch_size)
             result_metric.has_reset = False
-
+        
+        print("results update:", key, value)
         apply_to_collections(self[key], value, ResultMetric, fn)
 
     @staticmethod

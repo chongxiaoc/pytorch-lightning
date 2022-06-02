@@ -410,6 +410,7 @@ class DDPSpawnPlugin(ParallelPlugin):
         callback_metrics: dict = apply_to_collection(
             trainer.callback_metrics, torch.Tensor, lambda x: x.cpu().numpy()
         )  # send as numpy to avoid issues with memory sharing
+        print("ddp spawn add callback metrics:", callback_metrics)
         queue.put(callback_metrics)
 
     def get_from_queue(self, trainer: "pl.Trainer", queue: torch.multiprocessing.SimpleQueue) -> None:
